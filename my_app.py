@@ -17,6 +17,7 @@ d=["Full Name","ENTRY PERMIT NO","UID NO:","Date Of Issue","Place Of Issue","Val
 length_d=len(d)
 e=[] ## END OF PYTHON VARIBLE
 k=''
+langs=['en']
 
 
 UPLOADER_FOLDER=''
@@ -43,7 +44,7 @@ def index():
                 # using OpenCV
                 return "".join([c if ord(c) < 128 else "" for c in text]).strip()
             # construct the argument parser and parse the arguments
-            ap = argparse.ArgumentParser()
+            '''ap = argparse.ArgumentParser()
             ap.add_argument("-i", "--image", required=False,
                 help="path to input image to be OCR'd")
             ap.add_argument("-l", "--langs", type=str, default="en",
@@ -52,7 +53,8 @@ def index():
                 help="whether or not GPU should be used")
             args = vars(ap.parse_args())
             # break the input languages into a comma separated list
-            langs = args["langs"].split(",")
+            langs = args["langs"].split(",")'''
+            print(langs)
             print("[INFO] OCR'ing with the following languages: {}".format(langs))
             # load the input image from disk 
             image = cv2.imread("test.jpg")
