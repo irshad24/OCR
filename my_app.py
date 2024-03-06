@@ -137,7 +137,7 @@ def index():
 
             df = pd.DataFrame(list(zip(a,b)))
             print(length_d)
-            df2 = df.head(length_d)
+            df2 = df.tail(length_d)
             print(df2)
             global o_file
             o_file = str(c)+ ' Visa.csv'	
