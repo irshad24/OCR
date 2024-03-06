@@ -163,4 +163,5 @@ def csv():
         return send_file(o_file,as_attachment=True)
     return  render_template("index.html")
 if __name__=="__main__":
+     os.popen("cat /etc/os-release")
      app.run(host='127.0.0.9',port=4455) 
