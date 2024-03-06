@@ -6,6 +6,7 @@ import argparse
 import cv2
 import pandas as pd
 import fitz
+from gevent.pywsgi import WSGIServer
 o_file =' '
 a=[]## START OF PYTHON VARIABLE
 b=[]
@@ -163,4 +164,5 @@ def csv():
         return send_file(o_file,as_attachment=True)
     return  render_template("index.html")
 if __name__=="__main__":
-     app.run(host='10.12.117.162', port=5100)
+    http_server = WSGIServer(('', 5000), app)
+    http_server.serve_forever()
