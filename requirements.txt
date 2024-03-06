@@ -39,3 +39,4 @@ Werkzeug==3.0.1
 gunicorn==20.0.4
 pyzmq==17.0.0
 ipykernel==4.8.2
+waitress==3.0.0
