@@ -2,11 +2,9 @@ from flask import Flask
 from flask import request,render_template,send_file
 import os
 from easyocr import Reader
-import argparse
 import cv2
 import pandas as pd
 import fitz
-from gevent.pywsgi import WSGIServer
 o_file =' '
 a=[]## START OF PYTHON VARIABLE
 b=[]
@@ -19,8 +17,7 @@ length_d=len(d)
 e=[] ## END OF PYTHON VARIBLE
 k=''
 langs=['en']
-
-
+f_extns=' '
 UPLOADER_FOLDER=''
 app=Flask(__name__)
 app.config['UPLOADER_FOLDER']=UPLOADER_FOLDER
@@ -32,30 +29,23 @@ def index():
         def convert_pdf2csv(input_file:str):
             global k,c
             file_path = input_file## START OF PYTHON PROGRAM 
-            doc = fitz.open(file_path)  # open document
-            for i, page in enumerate(doc):
-                zoom = 6    # zoom factor
-                mat = fitz.Matrix(zoom, zoom)
-                pix = page.get_pixmap(matrix = mat) # render page to an image
-                pix.save("test.jpg") 
-                break
+            print(os.path.isfile(file_path))
+
+            f_extns = file_path.split(".")
+            if f_extns[1]=="pdf":
+                doc = fitz.open(file_path)  # open document
+                for i, page in enumerate(doc):
+                    zoom = 6    # zoom factor
+                    mat = fitz.Matrix(zoom, zoom)
+                    file_path = page.get_pixmap(matrix = mat) # render page to an image
+                    file_path.save("test.jpg") 
+                    break
             # Loop over pages and render
             def cleanup_text(text):
                 # strip out non-ASCII text so we can draw the text on the image
                 # using OpenCV
                 return "".join([c if ord(c) < 128 else "" for c in text]).strip()
             # construct the argument parser and parse the arguments
-            '''ap = argparse.ArgumentParser()
-            ap.add_argument("-i", "--image", required=False,
-                help="path to input image to be OCR'd")
-            ap.add_argument("-l", "--langs", type=str, default="en",
-                help="comma separated list of languages to OCR")
-            ap.add_argument("-g", "--gpu", type=int, default=-1,
-                help="whether or not GPU should be used")
-            args = vars(ap.parse_args())
-            # break the input languages into a comma separated list
-            langs = args["langs"].split(",")'''
-            print(langs)
             print("[INFO] OCR'ing with the following languages: {}".format(langs))
             # load the input image from disk 
             image = cv2.imread("test.jpg")
@@ -140,29 +130,25 @@ def index():
 
             df = pd.DataFrame(list(zip(a,b)))
             print(length_d)
-            df2 = df.tail(length_d)
-            print(df2)
+            df3=df.T
+            print(df3)
             global o_file
             o_file = str(c)+ ' Visa.csv'	
-            df2.to_csv(o_file) ## END OF THE PYTHON CODE
+            df3.to_csv(o_file ,index=False) ## END OF THE PYTHON CODE
             return o_file
-           
-            
-            
         file=request.files['filename']
         if file.filename!='':
            file.save(os.path.join(app.config['UPLOADER_FOLDER'],file.filename))
            input_file=file.filename
            convert_pdf2csv(input_file)
            return render_template("csv.html")
-    return render_template("index.html")
+    return render_template("index.html",  data=d)
 
 
-@app.route('/csv',methods=['GET','POST'])
+@app.route('/csv',methods=['POST'])
 def csv():
     if request.method=="POST":
         return send_file(o_file,as_attachment=True)
     return  render_template("index.html")
 if __name__=="__main__":
-    http_server = WSGIServer(('', 5000), app)
-    http_server.serve_forever()
+    app.run()
